@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kayla Beauty Haven</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        /* ===== RESET BÁSICO ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            color: #333;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* ===== OVERLAY DO MENU ===== */
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(3px);
+            z-index: 90;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .menu-overlay.ativo {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 50px;
+            background-color: transparent; /* Começa transparente */
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+
+        /* Header quando faz scroll */
+        .header.scroll {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .header.scroll .palavra_menu,
+        .header.scroll .logo,
+        .header.scroll .search-box input,
+        .header.scroll .search-box button,
+        .header.scroll .carrinho-icon {
+            color: #333;
+        }
+
+        .header.scroll .search-box {
+            border-bottom-color: #ddd;
+        }
+
+        .header.scroll .search-box input::placeholder {
+            color: #999;
+        }
+
+        /* ===== MENU LADO ESQUERDO ===== */
+        .header-left {
+            position: relative;
+            width: 150px;
+        }
+
+        .palavra_menu {
+            color: white;
+            font-weight: 500;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            display: inline-block;
+            padding: 0.5rem 0;
+            border-bottom: 2px solid transparent;
+            transition: border-color 0.2s;
+            position: relative;
+            z-index: 102;
+        }
+
+        .palavra_menu:hover {
+            border-bottom-color: white;
+        }
+
+        /* Dropdown do menu */
+        .dropdown_menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            min-width: 220px;
+            z-index: 101;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            margin-top: 5px;
+        }
+
+        .dropdown_menu.aberto {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        /* Hover funciona apenas quando não está aberto por clique */
+        .header-left:hover .dropdown_menu:not(.aberto) {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown_menu a {
+            color: #333;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            transition: all 0.2s;
+            border-bottom: 1px solid #eee;
+            font-weight: 500;
+        }
+
+        .dropdown_menu a:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown_menu a:hover {
+            background-color: #f8f8f8;
+            color: #000;
+            padding-left: 2rem;
+        }
+
+        .dropdown_menu a i {
+            color: #666;
+            width: 20px;
+        }
+
+        /* Botão fechar menu */
+        .botao_fechar_menu {
+            position: absolute;
+            left: calc(100% + 15px);
+            top: 50%;
+            transform: translateY(-50%);
+            background: white;
+            color: #333;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+            z-index: 103;            
+            border: none;
+        }
+
+        .botao_fechar_menu.mostrar {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .botao_fechar_menu:hover {
+            background: #333;
+            color: white;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        /* ===== LOGO CENTRO ===== */
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 400;
+            letter-spacing: 3px;
+            color: white;
+            text-decoration: none;
+            font-family: 'Cormorant Garamond', serif;
+            text-transform: uppercase;
+        }
+
+        /* ===== ÍCONES CANTO DIREITO ===== */
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            width: 150px;
+            justify-content: flex-end;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.5);
+            padding-bottom: 0.3rem;
+        }
+
+        .search-box input {
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 0.3rem 0;
+            font-size: 0.9rem;
+            outline: none;
+            width: 100px;
+        }
+
+        .search-box input::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+
+        .search-box button {
+            background: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+
+        .carrinho-icon {
+            color: white;
+            font-size: 1.3rem;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .carrinho-icon .contador {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #000;
+            color: white;
+            font-size: 0.7rem;
+            border-radius: 50%;
+            padding: 0.1rem 0.4rem;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        /* ===== HERO SECTION ===== */
+        .hero {
+            height: 100vh;
+            width: 100%;
+            background-image: url('https://images.pexels.com/photos/994517/pexels-photo-994517.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: scroll;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 600px;
+            padding: 2rem;
+        }
+
+        .hero-content h2 {
+            font-size: 3.5rem;
+            font-weight: 300;
+            margin-bottom: 1rem;
+            letter-spacing: 4px;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            font-weight: 300;
+            color: white;
+        }
+
+        .btn {
+            background: white;
+            color: black;
+            border: none;
+            padding: 1rem 2.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            text-transform: uppercase;
+        }
+
+        .btn:hover {
+            background: black;
+            color: white;
+            transform: scale(1.02);
+        }
+
+        /* ===== SEÇÃO DE PRODUTOS ===== */
+        .seccao_de_produtos {
+            background: white;
+            padding: 5rem 2rem;
+        }
+
+        .container_titulo_produtos {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .bloco_do_título_dos_produtos {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .bloco_do_título_dos_produtos h3 {
+            font-size: 2.2rem;
+            color: #000;
+            font-weight: 300;
+            letter-spacing: 3px;
+            margin-bottom: 0.5rem;
+            font-family: 'Cormorant Garamond', serif;
+            text-transform: uppercase;
+        }
+
+        .bloco_do_título_dos_produtos p {
+            color: #666;
+            font-size: 1rem;
+            letter-spacing: 1px;
+        }
+
+        .grid_dos_produtos {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .produto_card {
+            background: white;
+            border: 1px solid #eee;
+            transition: all 0.3s;
+        }
+
+        .produto_card:hover {
+            transform: translateY(-5px);
+            border-color: #000;
+        }
+
+        .imagem_do_produto {
+            height: 250px;
+            background: #f8f8f8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+        }
+
+        .informacao_do_produto {
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .informacao_do_produto h4 {
+            color: #000;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            font-weight: 400;
+            letter-spacing: 1px;
+        }
+
+        .informacao_do_produto p {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .preco_do_produto {
+            font-size: 1.3rem;
+            font-weight: 500;
+            color: #000;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+            background: white;
+            border-top: 1px solid #eee;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        /* ===== RESPONSIVIDADE ===== */
+        @media (max-width: 768px) {
+            .header {
+                padding: 0 20px;
+            }
+            
+            .header-left, .header-right {
+                width: auto;
+            }
+            
+            .logo {
+                font-size: 1.2rem;
+            }
+            
+            .search-box input {
+                width: 70px;
+            }
+            
+            .hero-content h2 {
+                font-size: 2.2rem;
+            }
+            
+            .seccao_de_produtos {
+                padding: 3rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Overlay do menu -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <!-- HEADER -->
+    <header class="header" id="header">
+        <!-- Lado Esquerdo - MENU -->
+        <div class="header-left" id="headerMenu">
+            <span class="palavra_menu" id="palavraMenu">
+                MENU <i class="fas fa-chevron-down" style="font-size: 0.8rem; margin-left: 5px;"></i>
+            </span>
+
+            <div class="botao_fechar_menu" id="botaoFecharMenu">
+                <i class="fas fa-times"></i>
+            </div>
+
+            <div class="dropdown_menu" id="dropdownMenu">
+                <a href="#">
+                    <i class="fas fa-female"></i> Mulheres
+                </a>
+                <a href="#">
+                    <i class="fas fa-male"></i> Homens
+                </a>
+                <a href="#">
+                    <i class="fas fa-child"></i> Crianças
+                </a>
+            </div>
+        </div>
+
+        <!-- Centro - LOGO -->
+        <a href="#" class="logo">KAYLA</a>
+
+        <!-- Lado Direito - ÍCONES -->
+        <div class="header-right">
+            <div class="search-box">
+                <input type="text" placeholder="Buscar...">
+                <button><i class="fas fa-search"></i></button>
+            </div>
+
+            <div class="carrinho-icon" id="abrirCarrinhoBtn">
+                <i class="fas fa-shopping-bag"></i>
+                <span class="contador" id="contadorCarrinho">0</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <div class="hero-content">
+            <h2>KAYLA BEAUTY HAVEN</h2>
+            <p>A beleza que mereces</p>
+            <a href="#" class="btn">EXPLORAR</a>
+        </div>
+    </section>
+
+    <!-- SEÇÃO DE PRODUTOS 1 -->
+    <section class="seccao_de_produtos">
+        <div class="container_titulo_produtos">
+            <div class="bloco_do_título_dos_produtos">
+                <h3>NOVOS DESTAQUES</h3>
+                <p>Os mais vendidos da semana</p>
+            </div>
+
+            <div class="grid_dos_produtos">
+                <!-- Produto 1 -->
+                <div class="produto_card">
+                    <div class="imagem_do_produto">👗</div>
+                    <div class="informacao_do_produto">
+                        <h4>Vestido Floral</h4>
+                        <p>Algodão, verão 2026</p>
+                        <div class="preco_do_produto">€ 89,90</div>
+                    </div>
+                </div>
+
+                <!-- Produto 2 -->
+                <div class="produto_card">
+                    <div class="imagem_do_produto">👚</div>
+                    <div class="informacao_do_produto">
+                        <h4>Blusa de Seda</h4>
+                        <p>Toque suave, elegante</p>
+                        <div class="preco_do_produto">€ 69,90</div>
+                    </div>
+                </div>
+
+                <!-- Produto 3 -->
+                <div class="produto_card">
+                    <div class="imagem_do_produto">👖</div>
+                    <div class="informacao_do_produto">
+                        <h4>Calça Pantalona</h4>
+                        <p>Linho, modelagem ampla</p>
+                        <div class="preco_do_produto">€ 99,90</div>
+                    </div>
+                </div>
+
+                <!-- Produto 4 -->
+                <div class="produto_card">
+                    <div class="imagem_do_produto">🧥</div>
+                    <div class="informacao_do_produto">
+                        <h4>Blazer Clássico</h4>
+                        <p>Corte estruturado</p>
+                        <div class="preco_do_produto">€ 159,90</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SEÇÃO DE PRODUTOS 2 -->
+    <section class="seccao_de_produtos" style="background: #f9f9f9;">
+        <div class="container_titulo_produtos">
+            <div class="bloco_do_título_dos_produtos">
+                <h3>ACESSÓRIOS</h3>
+                <p>Os detalhes que fazem a diferença</p>
+            </div>
+
+            <div class="grid_dos_produtos">
+                <!-- Produto 5 -->
+                <div class="produto_card">
+                    <div class="imagem_do_produto">🕶️</div>
+                    <div class="informacao_do_produto">
+                        <h4>Óculos de Sol</h4>
+                        <p>Proteção UV, design italiano</p>
+                        <div class="preco_do_produto">€ 49,90</div>
+                    </div>
+                </div>
+
+                <!-- Produto 6 -->
+                <div class="produto_card">
+                    <div class="imagem_do_produto">🧣</div>
+                    <div class="informacao_do_produto">
+                        <h4>Cachecol de Seda</h4>
+                        <p>Estampado, 100% seda</p>
+                        <div class="preco_do_produto">€ 39,90</div>
+                    </div>
+                </div>
+
+                <!-- Produto 7 -->
+                <div class="produto_card">
+                    <div class="imagem_do_produto">👛</div>
+                    <div class="informacao_do_produto">
+                        <h4>Bolsa Transversal</h4>
+                        <p>Couro legítimo</p>
+                        <div class="preco_do_produto">€ 129,90</div>
+                    </div>
+                </div>
+
+                <!-- Produto 8 -->
+                <div class="produto_card">
+                    <div class="imagem_do_produto">💍</div>
+                    <div class="informacao_do_produto">
+                        <h4>Conjunto de Joias</h4>
+                        <p>Aço inoxidável, banho a ouro</p>
+                        <div class="preco_do_produto">€ 89,90</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <p>© 2026 KAYLA BEAUTY HAVEN. TODOS OS DIREITOS RESERVADOS.</p>
+    </footer>
+
+    <script>
+        (function() {
+            // Elementos do menu - CORRIGIDO com os IDs corretos
+            const menuContainer = document.getElementById('headerMenu');
+            const menuPalavra = document.getElementById('palavraMenu'); // ANTES: 'menuPalavra' (errado)
+            const menuDropdown = document.getElementById('dropdownMenu');
+            const menuCloseBtn = document.getElementById('botaoFecharMenu'); // ANTES: 'menuCloseBtn' (errado)
+            const menuOverlay = document.getElementById('menuOverlay');
+            const header = document.getElementById('header');
+            
+            let menuAbertoPorClique = false;
+
+            // ---------- FUNÇÕES DO MENU ----------
+            function abrirMenu() {
+                menuAbertoPorClique = true;
+                menuDropdown.classList.add('aberto');
+                menuCloseBtn.classList.add('mostrar'); // ANTES: 'visivel' (errado)
+                menuOverlay.classList.add('ativo');
+                menuContainer.classList.remove('hover');
+            }
+
+            function fecharMenu() {
+                menuAbertoPorClique = false;
+                menuDropdown.classList.remove('aberto');
+                menuCloseBtn.classList.remove('mostrar'); // ANTES: 'visivel' (errado)
+                menuOverlay.classList.remove('ativo');
+            }
+
+            // ---------- EVENTOS DE HOVER ----------
+            menuContainer.addEventListener('mouseenter', () => {
+                if (!menuAbertoPorClique) {
+                    menuContainer.classList.add('hover');
+                }
+            });
+
+            menuContainer.addEventListener('mouseleave', () => {
+                if (!menuAbertoPorClique) {
+                    menuContainer.classList.remove('hover');
+                }
+            });
+
+            // ---------- EVENTOS DE CLIQUE ----------
+            if (menuPalavra) {
+                menuPalavra.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (menuAbertoPorClique) {
+                        fecharMenu();
+                    } else {
+                        abrirMenu();
+                    }
+                });
+            }
+
+            if (menuCloseBtn) {
+                menuCloseBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    fecharMenu();
+                });
+            }
+
+            if (menuOverlay) {
+                menuOverlay.addEventListener('click', () => {
+                    fecharMenu();
+                });
+            }
+
+            // Fechar com ESC
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && menuAbertoPorClique) {
+                    fecharMenu();
+                }
+            });
+
+            // ---------- EFEITO DE SCROLL NO HEADER ----------
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    header.classList.add('scroll');
+                } else {
+                    header.classList.remove('scroll');
+                }
+            });
+
+            // ---------- CONTADOR DO CARRINHO ----------
+            const contador = document.querySelector('.contador');
+            if (contador) {
+                contador.innerText = '3'; // Exemplo
+            }
+
+            // ---------- LINKS DO DROPDOWN ----------
+            document.querySelectorAll('.dropdown_menu a').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    console.log(`Clicou em: ${link.textContent.trim()}`);
+                    fecharMenu();
+                    // Aqui podes adicionar navegação para a categoria
+                });
+            });
+
+        })();
+    </script>
+
+</body>
+</html>
